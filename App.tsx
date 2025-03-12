@@ -8,6 +8,7 @@ import './global.css';
 import '@expo/metro-runtime';
 import React, { useState } from 'react';
 import { Vector2 } from 'types/Vector2';
+import { CustomModal } from 'components/CustomModal';
 
 export const SelectContext = createContext<{
     getSelected: () => Vector2;
@@ -27,8 +28,20 @@ export default function App() {
         _setSelected(s);
     };
 
+    const [modalState, setModalState] = useState<boolean>(true);
+
+    const modalButtons = [
+        {
+            text: 'Reset Board',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => setModalState(false),
+        },
+    ];
+
     return (
         <SelectContext.Provider value={{ getSelected, setSelected }}>
+            <CustomModal isActive={modalState} buttons={modalButtons} />
             <ScreenContent title="Home" path="App.tsx"></ScreenContent>
             <StatusBar style="auto" />
         </SelectContext.Provider>
