@@ -7,15 +7,9 @@ export type GridAttributes = {
 
 export function calcGridAttrs(canvasSize: number, tilesInASide: number): GridAttributes {
     // total gap must at least equal a tile in size
-    const totalGap = Math.ceil(tilesInASide / 4);
+    const totalGap = Math.ceil(tilesInASide / 8);
     const tileSize = Math.ceil(canvasSize / (tilesInASide + totalGap));
-    const gap = Math.ceil((totalGap * tileSize) / (tilesInASide + 1));
-
-    console.log('Canvas Size: ' + canvasSize);
-    console.log('Tiles In A Side: ' + tilesInASide);
-    console.log('Total Gap: ' + totalGap);
-    console.log('Tile Size: ' + tileSize);
-    console.log('Gap: ' + gap);
+    const gap = Math.ceil((totalGap * tileSize) / (tilesInASide + 3));
 
     return {
         gap,
@@ -27,5 +21,12 @@ export function calcGridPosition(position: Vector2, tileSize: number, gap: numbe
     return {
         x: position.x * tileSize + position.x * gap,
         y: position.y * tileSize + position.y * gap,
+    };
+}
+
+export function pos2coords(pos: Vector2, tileSize: number, gap: number): Vector2 {
+    return {
+        x: 1.5 * gap + pos.x * (tileSize + gap),
+        y: 1.5 * gap + pos.y * (tileSize + gap),
     };
 }

@@ -11,7 +11,7 @@ import { Vector2 } from 'types/Vector2';
 import { CustomModal } from 'components/CustomModal';
 import { Canvas } from 'components/Canvas';
 import { View } from 'react-native';
-import { BoardItem, BoardItemProps } from 'components/BoardItem';
+import { BoardItemProps } from 'components/BoardItem';
 import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
 
@@ -21,13 +21,23 @@ const TILES_IN_A_SIDE = 8;
 
 const INIT_BOARD: BoardItemProps[] = [];
 
+let x = 0;
 for (let i = 0; i < TILES_IN_A_SIDE; i++) {
     for (let j = 0; j < TILES_IN_A_SIDE; j++) {
-        INIT_BOARD.push({
-            key: i * TILES_IN_A_SIDE + j + '',
-            position: { x: i, y: j },
-            type: BoardItemType.PEG,
-        });
+        if (x > 0)
+            INIT_BOARD.push({
+                _key: i * TILES_IN_A_SIDE + j + '',
+                position: { x: i, y: j },
+                type: BoardItemType.PEG,
+            });
+        else
+            INIT_BOARD.push({
+                _key: i * TILES_IN_A_SIDE + j + '',
+                position: { x: i, y: j },
+                type: BoardItemType.HOLE,
+            });
+
+        x = (x + 1) % 3;
     }
 }
 

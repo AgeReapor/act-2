@@ -1,6 +1,6 @@
 export enum Direction {
-    UP = 1,
-    DOWN,
-    LEFT,
-    RIGHT,
+    UP = '0deg',
+    RIGHT = '90deg',
+    DOWN = '180deg',
+    LEFT = '270deg',
 }
