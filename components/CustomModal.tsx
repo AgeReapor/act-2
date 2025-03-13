@@ -21,7 +21,7 @@ export const CustomModal = ({
         {
             text: 'Button',
             textColor: 'text-white',
-            color: 'color-slate-400',
+            color: 'color-slate-200',
             onPress: () => console.log('Pressed Modal Button'),
         },
     ],
@@ -35,10 +35,10 @@ export const CustomModal = ({
             onRequestClose={() => {
                 console.log('Modal has been closed.');
             }}>
-            <View className="flex-1">
-                <View className="size-full items-center justify-center bg-slate-800 p-4 text-white">
-                    <Text className="text-lg text-white">{title}</Text>
-                    <Text className="mt-4 text-white">{message}</Text>
+            <View className="size-full flex-1 items-center justify-center bg-slate-900">
+                <View className="w-8/12 items-center justify-center gap-4 rounded-md bg-slate-800 p-4 py-10 text-white">
+                    <Text className="text-lg leading-tight text-white">{title}</Text>
+                    <Text className="mt-4 pb-4 text-white">{message}</Text>
                     <View className="">
                         {buttons.map((button, index) => (
                             <ModalButton

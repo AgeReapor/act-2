@@ -3,41 +3,46 @@ import { Image, Pressable, Text } from 'react-native';
 import { BoardItemType } from 'types/BoardItemType';
 import { Move } from 'types/Move';
 import { Vector2 } from 'types/Vector2';
-import { SelectContext } from 'App';
+import { Context } from 'App';
 
-type BoardItemProps = {
+export type BoardItemProps = {
     // key of the component
     key: string;
     // PEG or HOLE
-    type: BoardItemType;
+    type?: BoardItemType;
     // Position on board: {x,y}
-    position: Vector2;
+    position?: Vector2;
     // [Default Color, Selected Color]
-    colors: string[];
+    colors?: string[];
     // Available Moves
-    playableMoves: Move[];
+    playableMoves?: Move[];
     // Called when a move is selected
-    moveHandler: (move: Move) => void;
+    moveHandler?: (move: Move) => void;
 };
 
 const pawnImage = require('../assets/pawn.png');
-const holeImage = require('../assets/hole.png');
 
 export const BoardItem = ({
     key,
-    type,
-    position,
-    colors,
-    playableMoves,
-    moveHandler,
+    type = BoardItemType.PEG,
+    position = { x: 0, y: 0 },
+    colors = [`bg-teal-200`, `bg-teal-400`],
+    playableMoves = [],
+    moveHandler = () => {
+        console.log('no move handler');
+    },
 }: BoardItemProps) => {
-    const { getSelected, setSelected } = useContext(SelectContext);
+    const { getSelected, setSelected, tileSize, gap } = useContext(Context);
 
     // derived attributes
     const selected = getSelected();
     const isSelected = selected.x == position.x && selected.y == position.y;
     // const canMove = playableMoves.length > 0;
     const canMove = playableMoves.length >= 0;
+    const realCoords: Vector2 = {
+        x: gap + position.x * (tileSize + gap),
+        y: gap + position.y * (tileSize + gap),
+    };
 
     // handlers
     const selectedHandler = () => {
@@ -51,12 +56,13 @@ export const BoardItem = ({
     const disabledHandler = () => {};
 
     // styles
-    const tile = `relative size-10 items-center justify-center transition-colors rounded-md`;
+    const tileStyles = `absolute items-center justify-center transition-all left-${position.x} top-${position.y} rounded-md`;
 
     if (type === BoardItemType.PEG)
         return (
             <Pressable
-                className={`${tile} ${colors} ${isSelected ? colors[1] : colors[0]}`}
+                className={`${tileStyles} ${colors} ${isSelected ? colors[1] : colors[0]}`}
+                style={{ left: realCoords.x, top: realCoords.y, width: tileSize, height: tileSize }}
                 onPress={canMove ? selectedHandler : disabledHandler}
                 onBlur={blurHandler}>
                 <Image
@@ -66,5 +72,5 @@ export const BoardItem = ({
             </Pressable>
         );
 
-    return <Pressable className={`${tile}  ${colors[0]} `}></Pressable>;
+    return <Pressable className={`${tileStyles}  ${colors[0]} `}></Pressable>;
 };
