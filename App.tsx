@@ -107,6 +107,7 @@ export default function App() {
                 {/* <ScreenContent title="Home" path="App.tsx"></ScreenContent> */}
                 <Canvas boardState={boardState}></Canvas>
                 <TextTracker boardState={boardState} />
+
                 <StatusBar style="auto" />
             </SafeAreaView>
         </Context.Provider>

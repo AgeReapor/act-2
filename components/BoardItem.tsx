@@ -48,7 +48,7 @@ export const BoardItem = ({
     };
 
     const blurHandler = () => {
-        setSelected({ x: -1, y: -1 });
+        // setSelected({ x: -1, y: -1 });
     };
 
     const disabledHandler = () => {};

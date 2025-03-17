@@ -4,6 +4,8 @@ import { View } from 'react-native';
 import { Move } from 'types/Move';
 import { Context } from 'App';
 import { BoardSquare } from './BoardSquare';
+import { MoveArrow } from './MoveArrow';
+import { Direction } from 'types/Direction';
 
 type CanvasProps = {
     boardState?: BoardItemProps[];
@@ -11,7 +13,7 @@ type CanvasProps = {
 };
 
 export const Canvas = ({ boardState = [] }: CanvasProps) => {
-    const { canvasSize } = useContext(Context);
+    const { getSelected, canvasSize } = useContext(Context);
     return (
         <View
             className={`relative rounded-md bg-cyan-950`}
@@ -32,6 +34,10 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
                     moveHandler={item.moveHandler}
                 />
             ))}
+            <MoveArrow pos={getSelected()} />
+            <MoveArrow pos={getSelected()} dir={Direction.DOWN} />
+            <MoveArrow pos={getSelected()} dir={Direction.LEFT} />
+            <MoveArrow pos={getSelected()} dir={Direction.RIGHT} />
         </View>
     );
 };
