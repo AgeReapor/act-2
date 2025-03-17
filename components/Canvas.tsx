@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BoardItem, BoardItemProps } from './BoardItem';
 import { View } from 'react-native';
 import { Move } from 'types/Move';
@@ -6,6 +6,7 @@ import { Context } from 'App';
 import { BoardSquare } from './BoardSquare';
 import { MoveArrow } from './MoveArrow';
 import { Direction } from 'types/Direction';
+import { getPossibleMoves } from 'utils/GameUtils';
 
 type CanvasProps = {
     boardState?: BoardItemProps[];
@@ -13,7 +14,10 @@ type CanvasProps = {
 };
 
 export const Canvas = ({ boardState = [] }: CanvasProps) => {
-    const { getSelected, canvasSize } = useContext(Context);
+    const { getSelected, canvasSize, playMove, tilesInASide } = useContext(Context);
+
+    const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
+
     return (
         <View
             className={`relative rounded-md bg-cyan-950`}
@@ -34,10 +38,14 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
                     moveHandler={item.moveHandler}
                 />
             ))}
-            <MoveArrow pos={getSelected()} />
-            <MoveArrow pos={getSelected()} dir={Direction.DOWN} />
-            <MoveArrow pos={getSelected()} dir={Direction.LEFT} />
-            <MoveArrow pos={getSelected()} dir={Direction.RIGHT} />
+            {currentMoves.map((move, index) => (
+                <MoveArrow
+                    key={'ma_' + index}
+                    pos={move.from}
+                    dir={move.dir}
+                    moveCallback={() => playMove(move)}
+                />
+            ))}
         </View>
     );
 };

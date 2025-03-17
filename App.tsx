@@ -4,54 +4,32 @@ import './global.css';
 import '@expo/metro-runtime';
 
 import { StatusBar } from 'expo-status-bar';
-import { createContext, useContext, useEffect } from 'react';
+import { createContext } from 'react';
 import React, { useState } from 'react';
 import { Vector2 } from 'types/Vector2';
 import { CustomModal } from 'components/CustomModal';
 import { Canvas } from 'components/Canvas';
-import { FlatList, SafeAreaView, Text, View } from 'react-native';
+import { Button, SafeAreaView } from 'react-native';
 import { BoardItemProps } from 'components/BoardItem';
 import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
-import { getItem, getPossibleMoves } from 'utils/GameUtils';
 import { Move } from 'types/Move';
-import { Direction } from 'types/Direction';
+import { constructInitBoard, miniBoardConfig, triangularConfig } from 'utils/BoardConfig';
+import { getPossibleMoves } from 'utils/GameUtils';
 
 // Constant Declarations
 const CANVAS_SIZE = 360;
-const TILES_IN_A_SIDE = 8;
 
-const INIT_BOARD: BoardItemProps[] = [];
+// const INIT_BOARD_CONFIG = triangularConfig;
+const INIT_BOARD_CONFIG = miniBoardConfig;
 
-const boardSetup = () => {
-    let x = 0;
-    for (let i = 0; i < TILES_IN_A_SIDE; i++) {
-        for (let j = 0; j < TILES_IN_A_SIDE; j++) {
-            if (x > 0)
-                INIT_BOARD.push({
-                    _key: i * TILES_IN_A_SIDE + j + '',
-                    position: { x: i, y: j },
-                    type: BoardItemType.PEG,
-                    canMove: true,
-                });
-            else
-                INIT_BOARD.push({
-                    _key: i * TILES_IN_A_SIDE + j + '',
-                    position: { x: i, y: j },
-                    type: BoardItemType.HOLE,
-                    canMove: true,
-                });
-
-            x = (x + 1) % 3;
-        }
-    }
-};
-
-boardSetup();
+const { boardState: INIT_BOARD, tilesInASide: TILES_IN_A_SIDE } =
+    constructInitBoard(INIT_BOARD_CONFIG);
 
 export const Context = createContext<{
     getSelected: () => Vector2;
     setSelected: (s: Vector2) => void;
+    playMove: (move: Move) => void;
     readonly canvasSize: number;
     readonly tilesInASide: number;
     readonly gap: number;
@@ -60,6 +38,7 @@ export const Context = createContext<{
     // Selected Board Item Variable
     getSelected: () => ({ x: -1, y: -1 }),
     setSelected: () => {},
+    playMove: () => {},
 
     // Grid Attributes
     canvasSize: CANVAS_SIZE,
@@ -78,6 +57,83 @@ export default function App() {
     const setSelected = (s: Vector2) => {
         _setSelected(s);
     };
+
+    const playMove = (move: Move) => {
+        const { dir, from, to, eaten } = move;
+
+        const newBoardState = [...boardState];
+        newBoardState.forEach((item) => {
+            // set from type to hole
+            if (item.position.x == from.x && item.position.y == from.y)
+                item.type = BoardItemType.HOLE;
+
+            // set to type to peg
+            if (item.position.x == to.x && item.position.y == to.y) item.type = BoardItemType.PEG;
+
+            // set eaten type to hole
+            if (item.position.x == eaten.x && item.position.y == eaten.y)
+                item.type = BoardItemType.HOLE;
+        });
+
+        let pegsLeft = 0;
+        let playablePegs = 0;
+        newBoardState.forEach((item) => {
+            if (item.type == BoardItemType.PEG) pegsLeft++;
+
+            const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
+            if (moves.length <= 0) return;
+            item.canMove = true;
+
+            playablePegs++;
+        });
+
+        setBoardState(newBoardState);
+        setSelected({ x: -1, y: -1 });
+
+        if (pegsLeft == 1) {
+            console.log('You won!');
+            setGameState('won');
+        } else if (playablePegs == 0) {
+            console.log('You lost!');
+            setGameState('lost');
+        }
+
+        setPlayedMoves([...playedMoves, move]);
+    };
+
+    const undoMove = () => {
+        if (playedMoves.length == 0) return;
+
+        const move = playedMoves[playedMoves.length - 1];
+
+        const { from, to, eaten } = move;
+
+        const newBoardState = [...boardState];
+        boardState.forEach((item) => {
+            // set from type to peg
+            if (item.position.x == from.x && item.position.y == from.y)
+                item.type = BoardItemType.PEG;
+
+            // set to type to hole
+            if (item.position.x == to.x && item.position.y == to.y) item.type = BoardItemType.HOLE;
+
+            // set eaten type to peg
+            if (item.position.x == eaten.x && item.position.y == eaten.y)
+                item.type = BoardItemType.PEG;
+        });
+
+        setBoardState(newBoardState);
+        setSelected({ x: -1, y: -1 });
+
+        setPlayedMoves(playedMoves.slice(0, playedMoves.length - 1));
+    };
+
+    type GameState = 'start' | 'playing' | 'won' | 'lost';
+    const [gameState, setGameState] = useState<GameState>('start');
+
+    const [onboarding, setOnboarding] = useState<boolean>(false);
+
+    const [playedMoves, setPlayedMoves] = useState<Move[]>([]);
 
     const [boardState, setBoardState] = useState<BoardItemProps[]>(INIT_BOARD);
 
@@ -101,43 +157,20 @@ export default function App() {
                 tilesInASide: TILES_IN_A_SIDE,
                 gap: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).gap,
                 tileSize: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).tileSize,
+                playMove: playMove,
             }}>
-            <SafeAreaView className="justify-center items-center bg-gray-950 size-full">
+            <SafeAreaView className="size-full items-center justify-center bg-gray-950">
                 <CustomModal isActive={modalState} buttons={modalButtons} />
                 {/* <ScreenContent title="Home" path="App.tsx"></ScreenContent> */}
                 <Canvas boardState={boardState}></Canvas>
-                <TextTracker boardState={boardState} />
-
+                <Button
+                    title="Undo Move"
+                    onPress={() => {
+                        undoMove();
+                    }}
+                    disabled={playedMoves.length == 0}></Button>
                 <StatusBar style="auto" />
             </SafeAreaView>
         </Context.Provider>
     );
 }
-
-const TextTracker = ({ boardState = [] }: { boardState: BoardItemProps[] }) => {
-    const { getSelected } = useContext(Context);
-    const text =
-        getSelected().x == -1 || getSelected().y == -1
-            ? 'No Selection'
-            : `Selected: ${getSelected().x}, ${getSelected().y}`;
-
-    const moves = getPossibleMoves(getSelected(), boardState, TILES_IN_A_SIDE);
-
-    return (
-        <View className="flex-col">
-            <Text className="text-white">{text}</Text>
-
-            <Text className="text-white">
-                Possible Moves:{' '}
-                {moves
-                    .map((m) => {
-                        if (m.dir == Direction.UP) return 'Up';
-                        if (m.dir == Direction.DOWN) return 'Down';
-                        if (m.dir == Direction.LEFT) return 'Left';
-                        if (m.dir == Direction.RIGHT) return 'Right';
-                    })
-                    .join(', ')}
-            </Text>
-        </View>
-    );
-};

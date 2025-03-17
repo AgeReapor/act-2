@@ -1,6 +1,6 @@
 import { Context } from 'App';
 import { useContext } from 'react';
-import { View } from 'react-native';
+import { Pressable } from 'react-native';
 import { Vector2 } from 'types/Vector2';
 import { pos2coords } from 'utils/GridUtils';
 
@@ -16,7 +16,7 @@ export const BoardSquare = ({
     defaultColor = `bg-teal-200`,
     focusColor = `bg-teal-400`,
 }: BoardSquareProps) => {
-    const { getSelected, tileSize, gap } = useContext(Context);
+    const { getSelected, tileSize, gap, setSelected } = useContext(Context);
 
     // derived attributes
     const selected = getSelected();
@@ -27,7 +27,7 @@ export const BoardSquare = ({
     const tileStyles = `absolute transition-all rounded-md ${isSelected ? focusColor : defaultColor}`;
 
     return (
-        <View
+        <Pressable
             key={'bg_' + position.x + '_' + position.y}
             className={tileStyles}
             style={{
@@ -35,6 +35,7 @@ export const BoardSquare = ({
                 top: realCoords.y,
                 width: tileSize,
                 height: tileSize,
-            }}></View>
+            }}
+            onPress={() => setSelected({ x: -1, y: -1 })}></Pressable>
     );
 };
