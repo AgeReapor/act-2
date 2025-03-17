@@ -56,6 +56,14 @@ The player gets to select the Peg Solitaire variation they want to play at the s
 
 ![alt text](screenshots/Triangle.png)
 
+### Win Screen
+
+![alt text](screenshots/Win.png)
+
+### Game Over Screen
+
+![alt text](screenshots/Lose.png)
+
 ### Test Mini Board
 
 This was used for testing
