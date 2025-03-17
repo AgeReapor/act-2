@@ -46,6 +46,7 @@ export const frenchConfig: BoardConfig = [
     ' xxxxx ',
     'xxxoxxx',
     'xxxxxxx',
+    'xxxxxxx',
     ' xxxxx ',
     '  xxx  ',
 ];

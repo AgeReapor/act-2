@@ -1,4 +1,4 @@
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Button, Modal, Pressable, Text, View } from 'react-native';
 
 export type ModalButtonProps = {
     text: string;
@@ -39,7 +39,7 @@ export const CustomModal = ({
                 <View className="w-8/12 items-center justify-center gap-4 rounded-md bg-slate-800 p-4 py-10 text-white">
                     <Text className="text-lg leading-tight text-white">{title}</Text>
                     <Text className="mt-4 pb-4 text-white">{message}</Text>
-                    <View className="">
+                    <View className="gap-2">
                         {buttons.map((button, index) => (
                             <ModalButton
                                 key={'modalbtn_' + index}
@@ -58,8 +58,10 @@ export const CustomModal = ({
 
 const ModalButton = ({ text, textColor, color, onPress }: ModalButtonProps) => {
     return (
-        <Pressable className={`flex-1 rounded-lg p-2 ${color}`} onPress={onPress}>
-            <Text className={` ${textColor}`}>{text}</Text>
-        </Pressable>
+        <Button
+            // className={`flex-1 rounded-lg p-2 ${color} ${textColor}`}
+
+            title={text}
+            onPress={onPress}></Button>
     );
 };

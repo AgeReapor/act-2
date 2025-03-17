@@ -9,21 +9,31 @@ import React, { useState } from 'react';
 import { Vector2 } from 'types/Vector2';
 import { CustomModal } from 'components/CustomModal';
 import { Canvas } from 'components/Canvas';
-import { Button, SafeAreaView } from 'react-native';
+import { Button, SafeAreaView, View } from 'react-native';
 import { BoardItemProps } from 'components/BoardItem';
 import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
 import { Move } from 'types/Move';
-import { constructInitBoard, miniBoardConfig, triangularConfig } from 'utils/BoardConfig';
+import {
+    constructInitBoard,
+    miniBoardConfig,
+    frenchConfig,
+    wieglebConfig,
+    assym3322Config,
+    englishConfig,
+    diamondConfig,
+    triangularConfig,
+    BoardConfig,
+} from 'utils/BoardConfig';
 import { getPossibleMoves } from 'utils/GameUtils';
 
 // Constant Declarations
 const CANVAS_SIZE = 360;
 
 // const INIT_BOARD_CONFIG = triangularConfig;
-const INIT_BOARD_CONFIG = miniBoardConfig;
+let INIT_BOARD_CONFIG = miniBoardConfig;
 
-const { boardState: INIT_BOARD, tilesInASide: TILES_IN_A_SIDE } =
+let { boardState: INIT_BOARD, tilesInASide: TILES_IN_A_SIDE } =
     constructInitBoard(INIT_BOARD_CONFIG);
 
 export const Context = createContext<{
@@ -128,10 +138,8 @@ export default function App() {
         setPlayedMoves(playedMoves.slice(0, playedMoves.length - 1));
     };
 
-    type GameState = 'start' | 'playing' | 'won' | 'lost';
+    type GameState = 'start' | 'selection' | 'playing' | 'won' | 'lost';
     const [gameState, setGameState] = useState<GameState>('start');
-
-    const [onboarding, setOnboarding] = useState<boolean>(false);
 
     const [playedMoves, setPlayedMoves] = useState<Move[]>([]);
 
@@ -148,6 +156,110 @@ export default function App() {
         },
     ];
 
+    const reloadBoard = (config: BoardConfig) => {
+        let { boardState: newBoardState, tilesInASide: newTilesInASide } =
+            constructInitBoard(config);
+        INIT_BOARD_CONFIG = config;
+        TILES_IN_A_SIDE = newTilesInASide;
+        setBoardState(newBoardState);
+        setPlayedMoves([]);
+    };
+
+    const startSelection = [
+        {
+            text: 'Mini-Grid (3x3)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(miniBoardConfig);
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'French (European) Style (7x7)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(frenchConfig);
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'J.C Wiegleb Version (9x9)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(wieglebConfig);
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'Asymmetrical 3-3-2-2 (8x8)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(assym3322Config);
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'English Standard Style (7x7)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(englishConfig);
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'Diamond Variation (9x9)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(diamondConfig);
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'Triangular Variation (9x9)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(triangularConfig);
+                setGameState('playing');
+            },
+        },
+    ];
+
+    const lostButtons = [
+        {
+            text: 'Try again',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                setGameState('start');
+            },
+        },
+        {
+            text: 'Undo your last move',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                undoMove();
+                setGameState('playing');
+            },
+        },
+    ];
+
+    const wonButton = {
+        text: 'Play Again',
+        textColor: 'text-white',
+        color: 'bg-slate-500',
+        onPress: () => {
+            setGameState('start');
+        },
+    };
+
     return (
         <Context.Provider
             value={{
@@ -159,16 +271,43 @@ export default function App() {
                 tileSize: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).tileSize,
                 playMove: playMove,
             }}>
-            <SafeAreaView className="size-full items-center justify-center bg-gray-950">
-                <CustomModal isActive={modalState} buttons={modalButtons} />
-                {/* <ScreenContent title="Home" path="App.tsx"></ScreenContent> */}
+            <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
+                <CustomModal
+                    isActive={gameState == 'start' || gameState == 'won' || gameState == 'lost'}
+                    title="Peg Solitaire"
+                    // message='Instructions: Each peg can jump over and "eat"  one peg in any of the four directions, given that it lands in a hole. Your goal is to remove all but one peg from the board.'
+                    message="Pick your Peg Solitaire Variation"
+                    buttons={startSelection}></CustomModal>
+                <CustomModal
+                    isActive={gameState == 'lost'}
+                    title="You Lost!"
+                    message="You lost! Try again!"
+                    buttons={lostButtons}></CustomModal>
+                <CustomModal
+                    isActive={gameState == 'won'}
+                    title="You Won!"
+                    message="You won! Play again?"
+                    buttons={[wonButton]}></CustomModal>
                 <Canvas boardState={boardState}></Canvas>
-                <Button
-                    title="Undo Move"
-                    onPress={() => {
-                        undoMove();
-                    }}
-                    disabled={playedMoves.length == 0}></Button>
+                <View className="flex-row gap-2">
+                    <Button
+                        title="Restart"
+                        onPress={() => reloadBoard(INIT_BOARD_CONFIG)}
+                        disabled={playedMoves.length == 0}></Button>
+                    <Button
+                        title="Undo Move"
+                        onPress={() => {
+                            undoMove();
+                        }}
+                        disabled={playedMoves.length == 0}></Button>
+
+                    <Button
+                        title="Return to Menu"
+                        onPress={() => {
+                            setGameState('start');
+                        }}
+                    />
+                </View>
                 <StatusBar style="auto" />
             </SafeAreaView>
         </Context.Provider>
