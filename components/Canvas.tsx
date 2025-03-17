@@ -11,7 +11,7 @@ type CanvasProps = {
 };
 
 export const Canvas = ({ boardState = [] }: CanvasProps) => {
-    const { canvasSize, tilesInASide } = useContext(Context);
+    const { canvasSize } = useContext(Context);
     return (
         <View
             className={`relative rounded-md bg-cyan-950`}

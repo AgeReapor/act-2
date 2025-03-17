@@ -10,6 +10,8 @@ import { Direction } from 'types/Direction';
 const pawnImage = require('../assets/pawn.png');
 const arrowUp = require('../assets/arrow_up.png');
 
+const imgs = [];
+
 export type BoardItemProps = {
     // key of the component
     _key?: string;
@@ -80,7 +82,7 @@ export const BoardItem = ({
                     tintColor={
                         isSelected ? 'oklch(0.953 0.051 180.801)' : 'oklch(0.437 0.078 188.216)'
                     }></Image>
-                {/* {isSelected && (
+                {isSelected && (
                     <MoveArrow
                         key={Direction.UP}
                         dir={Direction.UP}
@@ -115,7 +117,7 @@ export const BoardItem = ({
                             console.log('Clicked Right');
                             setClickedDir(Direction.RIGHT);
                         }}></MoveArrow>
-                )} */}
+                )}
             </Pressable>
         );
 

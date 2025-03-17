@@ -1,16 +1,15 @@
-import { ScreenContent } from 'components/ScreenContent';
-import { StatusBar } from 'expo-status-bar';
-import { createContext } from 'react';
-
 import './global.css';
 
 // For web hotloading
 import '@expo/metro-runtime';
+
+import { StatusBar } from 'expo-status-bar';
+import { createContext } from 'react';
 import React, { useState } from 'react';
 import { Vector2 } from 'types/Vector2';
 import { CustomModal } from 'components/CustomModal';
 import { Canvas } from 'components/Canvas';
-import { View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { BoardItemProps } from 'components/BoardItem';
 import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
@@ -93,12 +92,12 @@ export default function App() {
                 gap: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).gap,
                 tileSize: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).tileSize,
             }}>
-            <View className="size-full items-center justify-center bg-gray-950">
+            <SafeAreaView className="size-full items-center justify-center bg-gray-950">
                 <CustomModal isActive={modalState} buttons={modalButtons} />
                 {/* <ScreenContent title="Home" path="App.tsx"></ScreenContent> */}
                 <Canvas boardState={boardState}></Canvas>
                 <StatusBar style="auto" />
-            </View>
+            </SafeAreaView>
         </Context.Provider>
     );
 }
