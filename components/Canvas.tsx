@@ -20,15 +20,15 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
                 <BoardSquare
                     key={'bg_' + item._key}
                     position={item.position}
-                    defaultColor={`${(item.position.x + item.position.y) % 2 ? 'bg-gray-200' : 'bg-teal-200'}`}
-                    focusColor={`${(item.position.x + item.position.y) % 2 ? 'bg-gray-400' : 'bg-teal-400'}`}></BoardSquare>
+                    defaultColor={`${(item.position.x + item.position.y) % 2 ? 'bg-gray-300' : 'bg-teal-300'}`}
+                    focusColor={`${(item.position.x + item.position.y) % 2 ? 'bg-gray-600' : 'bg-teal-600'}`}></BoardSquare>
             ))}
             {boardState.map((item, index) => (
                 <BoardItem
                     key={'fg_' + item._key}
                     type={item.type}
                     position={item.position}
-                    playableMoves={item.playableMoves}
+                    canMove={item.canMove}
                     moveHandler={item.moveHandler}
                 />
             ))}
