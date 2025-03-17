@@ -20,7 +20,7 @@ To install the app, run `npm install` in the root directory, then run one of the
 
 ## GAMEPLAY
 
-The player can pick one pawn called 'Peg' from the board. That peg can jump over another adjacent peg into an empty square called 'Hole.' The goal of the game is to eat all Pegs aside from the last one standing. If there are more than one peg left that cannot move due to having no adjacent pegs, then the game is over.
+The player can pick one pawn called 'Peg' from the board. That peg can jump over another adjacent peg into an empty square called 'Hole,' getting rid of the other peg in the process. The goal of the game is to remove all Pegs aside from the last one standing. If there are more than one peg left that cannot move due to having no adjacent pegs, then the game is over.
 
 To make things easier for the player, they are given Undo and Reset buttons.
 
