@@ -134,6 +134,12 @@ export default function App() {
             if (item.position.x == eaten.x && item.position.y == eaten.y)
                 item.type = BoardItemType.PEG;
         });
+        newBoardState.forEach((item) => {
+            if (item.type == BoardItemType.HOLE) return;
+
+            const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
+            item.canMove = moves.length > 0;
+        });
 
         setBoardState(newBoardState);
         setSelected({ x: -1, y: -1 });
