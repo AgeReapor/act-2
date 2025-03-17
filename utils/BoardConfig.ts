@@ -96,4 +96,4 @@ export const diamondConfig: BoardConfig = [
     '    x    ',
 ];
 
-export const triangularConfig: BoardConfig = ['0', 'xx', 'xxx', 'xxxx', 'xxxxx'];
+export const triangularConfig: BoardConfig = ['0xxxx', 'xxxx ', 'xxx  ', 'xx   ', 'x    '];
