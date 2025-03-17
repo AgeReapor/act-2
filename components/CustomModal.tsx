@@ -37,7 +37,7 @@ export const CustomModal = ({
             }}>
             <View className="size-full flex-1 items-center justify-center bg-slate-900">
                 <View className="w-8/12 items-center justify-center gap-4 rounded-md bg-slate-800 p-4 py-10 text-white">
-                    <Text className="text-lg leading-tight text-white">{title}</Text>
+                    <Text className="text-2xl font-bold leading-tight text-white">{title}</Text>
                     <Text className="mt-4 pb-4 text-white">{message}</Text>
                     <View className="gap-2">
                         {buttons.map((button, index) => (

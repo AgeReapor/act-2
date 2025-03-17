@@ -51,7 +51,9 @@ export const BoardItem = ({
         // setSelected({ x: -1, y: -1 });
     };
 
-    const disabledHandler = () => {};
+    const disabledHandler = () => {
+        setSelected({ x: -1, y: -1 });
+    };
 
     // styles
     const tileStyles = `absolute items-center justify-center`;

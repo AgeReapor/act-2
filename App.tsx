@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { Vector2 } from 'types/Vector2';
 import { CustomModal } from 'components/CustomModal';
 import { Canvas } from 'components/Canvas';
-import { Button, SafeAreaView, View } from 'react-native';
+import { Button, SafeAreaView, Text, View } from 'react-native';
 import { BoardItemProps } from 'components/BoardItem';
 import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
@@ -88,13 +88,16 @@ export default function App() {
         let pegsLeft = 0;
         let playablePegs = 0;
         newBoardState.forEach((item) => {
-            if (item.type == BoardItemType.PEG) pegsLeft++;
+            if (item.type == BoardItemType.HOLE) return;
+
+            pegsLeft++;
 
             const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
-            if (moves.length <= 0) return;
-            item.canMove = true;
-
-            playablePegs++;
+            if (moves.length <= 0) item.canMove = false;
+            else {
+                item.canMove = true;
+                playablePegs++;
+            }
         });
 
         setBoardState(newBoardState);
@@ -161,26 +164,33 @@ export default function App() {
             constructInitBoard(config);
         INIT_BOARD_CONFIG = config;
         TILES_IN_A_SIDE = newTilesInASide;
+
+        newBoardState.forEach((item) => {
+            if (item.type == BoardItemType.HOLE) return;
+
+            const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
+            item.canMove = moves.length > 0;
+        });
+
         setBoardState(newBoardState);
         setPlayedMoves([]);
     };
 
+    type GameDetails = {
+        title: string;
+        description: string;
+    };
+
+    const [title, setTitle] = useState<string>('');
+
     const startSelection = [
-        {
-            text: 'Mini-Grid (3x3)',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                reloadBoard(miniBoardConfig);
-                setGameState('playing');
-            },
-        },
         {
             text: 'French (European) Style (7x7)',
             textColor: 'text-white',
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(frenchConfig);
+                setTitle('French (European) Style (7x7)');
                 setGameState('playing');
             },
         },
@@ -190,6 +200,7 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(wieglebConfig);
+                setTitle('J.C Wiegleb Version (9x9)');
                 setGameState('playing');
             },
         },
@@ -199,6 +210,7 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(assym3322Config);
+                setTitle('Asymmetrical 3-3-2-2 (8x8)');
                 setGameState('playing');
             },
         },
@@ -208,6 +220,7 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(englishConfig);
+                setTitle('English Standard Style (7x7)');
                 setGameState('playing');
             },
         },
@@ -217,6 +230,7 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(diamondConfig);
+                setTitle('Diamond Variation (9x9)');
                 setGameState('playing');
             },
         },
@@ -226,6 +240,17 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(triangularConfig);
+                setTitle('Triangular Variation (9x9)');
+                setGameState('playing');
+            },
+        },
+        {
+            text: 'Mini-Grid Test (3x3)',
+            textColor: 'text-white',
+            color: 'bg-slate-500',
+            onPress: () => {
+                reloadBoard(miniBoardConfig);
+                setTitle('Mini-Grid Test (3x3)');
                 setGameState('playing');
             },
         },
@@ -288,6 +313,7 @@ export default function App() {
                     title="You Won!"
                     message="You won! Play again?"
                     buttons={[wonButton]}></CustomModal>
+                <Text className="text-2xl font-bold text-white">{title}</Text>
                 <Canvas boardState={boardState}></Canvas>
                 <View className="flex-row gap-2">
                     <Button
