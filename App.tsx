@@ -154,12 +154,13 @@ export default function App() {
     // Dynamically Resize Canvas
     const resizeCanvas = () => {
         console.log('RESIZED');
-        setCanvasSize(Math.min(window.innerWidth * 0.9, window.innerHeight - 132));
+        setCanvasSize(Math.min(window.innerWidth * 0.9, window.innerHeight * 0.8));
     };
 
     useEffect(() => {
-        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
+        window.addEventListener('resize', resizeCanvas);
         return () => window.removeEventListener('resize', resizeCanvas);
         // unload
     }, []);
