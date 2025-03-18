@@ -59,6 +59,10 @@ export const BoardItem = ({
     const tileStyles = `absolute items-center justify-center`;
     const [clickedDir, setClickedDir] = useState<Direction | null>(null);
 
+    const disabledColor = 'oklch(0.437 0.078 188.216)';
+    const defaultColor = 'oklch(0.277 0.046 192.524)';
+    const selectedColor = 'oklch(0.953 0.051 180.801)';
+
     if (type === BoardItemType.PEG)
         return (
             <Pressable
@@ -79,7 +83,7 @@ export const BoardItem = ({
                     }}
                     className={`absolute transition-transform duration-200 ease-out ${isSelected ? 'drop-shadow-2xl' : ''}`}
                     tintColor={
-                        isSelected ? 'oklch(0.953 0.051 180.801)' : 'oklch(0.437 0.078 188.216)'
+                        isSelected ? selectedColor : canMove ? defaultColor : disabledColor
                     }></Image>
             </Pressable>
         );
