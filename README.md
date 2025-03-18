@@ -12,7 +12,7 @@ Coded by: Age Reapor
 
 ## INSTALLATION
 
-To install the app, run `npm install` in the root directory, then run one of the following:
+To install the app, run `npm install --force` in the root directory, then run one of the following:
 
 - `npm run web`
 - `npm run android`
