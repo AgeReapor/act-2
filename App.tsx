@@ -106,11 +106,13 @@ export default function App() {
         setSelected({ x: -1, y: -1 });
 
         if (pegsLeft == 1) {
-            console.log('You won!');
-            setGameState('won');
+            setTimeout(() => {
+                setGameState('won');
+            }, 500);
         } else if (playablePegs == 0) {
-            console.log('You lost!');
-            setGameState('lost');
+            setTimeout(() => {
+                setGameState('lost');
+            }, 500);
         }
 
         setPlayedMoves([...playedMoves, move]);

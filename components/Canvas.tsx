@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { BoardItem, BoardItemProps } from './BoardItem';
 import { View } from 'react-native';
 import { Move } from 'types/Move';
