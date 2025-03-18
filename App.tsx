@@ -4,7 +4,7 @@ import './global.css';
 import '@expo/metro-runtime';
 
 import { StatusBar } from 'expo-status-bar';
-import { createContext } from 'react';
+import { createContext, useEffect } from 'react';
 import React, { useState } from 'react';
 import { Vector2 } from 'types/Vector2';
 import { CustomModal } from 'components/CustomModal';
@@ -67,6 +67,8 @@ export default function App() {
     const setSelected = (s: Vector2) => {
         _setSelected(s);
     };
+
+    const [canvasSize, setCanvasSize] = useState<number>(CANVAS_SIZE);
 
     const playMove = (move: Move) => {
         const { dir, from, to, eaten } = move;
@@ -146,6 +148,21 @@ export default function App() {
 
         setPlayedMoves(playedMoves.slice(0, playedMoves.length - 1));
     };
+
+    // Dynamically Resize Canvas
+    const resizeCanvas = () => {
+        console.log('RESIZED');
+        setCanvasSize(Math.min(window.innerWidth * 0.9, window.innerHeight - 132));
+    };
+
+    useEffect(() => {
+        window.addEventListener('resize', resizeCanvas);
+
+        return () => window.removeEventListener('resize', resizeCanvas);
+        // unload
+    }, []);
+
+    // CANVAS_SIZE = Math.min(window.innerWidth, window.innerHeight) * 0.8;
 
     type GameState = 'start' | 'selection' | 'playing' | 'won' | 'lost';
     const [gameState, setGameState] = useState<GameState>('start');
@@ -296,10 +313,10 @@ export default function App() {
             value={{
                 getSelected,
                 setSelected,
-                canvasSize: CANVAS_SIZE,
+                canvasSize,
                 tilesInASide: TILES_IN_A_SIDE,
-                gap: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).gap,
-                tileSize: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).tileSize,
+                gap: calcGridAttrs(canvasSize, TILES_IN_A_SIDE).gap,
+                tileSize: calcGridAttrs(canvasSize, TILES_IN_A_SIDE).tileSize,
                 playMove: playMove,
             }}>
             <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
@@ -319,9 +336,11 @@ export default function App() {
                     title="You Won!"
                     message="You won! Play again?"
                     buttons={[wonButton]}></CustomModal>
-                <Text className="text-2xl font-bold text-white">{title}</Text>
+                <View className="w-full items-center">
+                    <Text className="text-center text-2xl font-bold text-white">{title}</Text>
+                </View>
                 <Canvas boardState={boardState}></Canvas>
-                <View className="flex-row gap-2">
+                <View className="w-full flex-row flex-wrap justify-center gap-2">
                     <Button
                         title="Restart"
                         onPress={() => reloadBoard(INIT_BOARD_CONFIG)}

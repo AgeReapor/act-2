@@ -35,7 +35,12 @@ export const CustomModal = ({
             onRequestClose={() => {
                 console.log('Modal has been closed.');
             }}>
-            <View className="size-full flex-1 items-center justify-center bg-slate-900">
+            <View
+                className="flex-1 items-center justify-center bg-slate-900"
+                style={{
+                    width: '100%',
+                    height: '100%',
+                }}>
                 <View className="w-8/12 items-center justify-center gap-4 rounded-md bg-slate-800 p-4 py-10 text-white">
                     <Text className="text-2xl font-bold leading-tight text-white">{title}</Text>
                     <Text className="mt-4 pb-4 text-white">{message}</Text>
