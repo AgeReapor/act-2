@@ -14,9 +14,9 @@ Coded by: Age Reapor
 
 To install the app, run `npm install` in the root directory, then run one of the following:
 
-- `npx expo start --android`
-- `npx expo start --web`
-- `npx expo start --ios`
+- `npm run web`
+- `npm run android`
+- `npm run ios`
 
 ## GAMEPLAY
 
