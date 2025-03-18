@@ -358,7 +358,8 @@ export default function App() {
                     <Button
                         title="Return to Menu"
                         onPress={() => {
-                            setGameState('start');
+                            let restart = confirm('Are you sure you want to return to the menu?');
+                            if (restart) setGameState('start');
                         }}
                     />
                 </View>
