@@ -19,19 +19,56 @@ export const constructInitBoard: (boardConfig: BoardConfig) => {
             // if out of bounds, continue
             if (j >= boardConfig[i].length) continue;
 
-            if (boardConfig[i][j] == '0' || boardConfig[i][j] == 'O' || boardConfig[i][j] == 'o') {
+            const thisChar = boardConfig[i][j];
+
+            const emptyChars = 'oO0';
+            const pegChars = 'xX';
+            const whiteMan = 'w';
+            const whiteKing = 'W';
+            const redMan = 'r';
+            const redKing = 'R';
+
+            if (emptyChars.search(thisChar) != -1) {
                 boardState.push({
                     _key: j * tilesInASide + i + '',
                     position: { x: j, y: i },
                     type: BoardItemType.HOLE,
                     canMove: true,
                 });
-            } else if (boardConfig[i][j] == 'X' || boardConfig[i][j] == 'x') {
+            } else if (pegChars.search(thisChar) != -1) {
                 boardState.push({
                     _key: j * tilesInASide + i + '',
                     position: { x: j, y: i },
                     type: BoardItemType.PEG,
                     canMove: true,
+                });
+            } else if (whiteMan.search(thisChar) != -1) {
+                boardState.push({
+                    _key: j * tilesInASide + i + '',
+                    position: { x: j, y: i },
+                    type: BoardItemType.MAN,
+                    canMove: false,
+                });
+            } else if (whiteKing.search(thisChar) != -1) {
+                boardState.push({
+                    _key: j * tilesInASide + i + '',
+                    position: { x: j, y: i },
+                    type: BoardItemType.KING,
+                    canMove: false,
+                });
+            } else if (redMan.search(thisChar) != -1) {
+                boardState.push({
+                    _key: j * tilesInASide + i + '',
+                    position: { x: j, y: i },
+                    type: BoardItemType.MAN,
+                    canMove: false,
+                });
+            } else if (redKing.search(thisChar) != -1) {
+                boardState.push({
+                    _key: j * tilesInASide + i + '',
+                    position: { x: j, y: i },
+                    type: BoardItemType.KING,
+                    canMove: false,
                 });
             }
         }
@@ -97,3 +134,14 @@ export const diamondConfig: BoardConfig = [
 ];
 
 export const triangularConfig: BoardConfig = ['0xxxx', 'xxxx ', 'xxx  ', 'xx   ', 'x    '];
+
+export const stdCheckers: BoardConfig = [
+    'owowowow',
+    'wowowowo',
+    'owowowow',
+    'oooooooo',
+    'oooooooo',
+    'rorororo',
+    'orororor',
+    'rorororo',
+];

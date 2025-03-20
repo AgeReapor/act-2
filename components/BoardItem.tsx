@@ -63,7 +63,7 @@ export const BoardItem = ({
     const defaultColor = 'oklch(0.277 0.046 192.524)';
     const selectedColor = 'oklch(0.953 0.051 180.801)';
 
-    if (type === BoardItemType.PEG)
+    if (type === BoardItemType.MAN)
         return (
             <Pressable
                 className={tileStyles}

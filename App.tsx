@@ -24,6 +24,7 @@ import {
     diamondConfig,
     triangularConfig,
     BoardConfig,
+    stdCheckers,
 } from 'utils/BoardConfig';
 import { getPossibleMoves } from 'utils/GameUtils';
 
@@ -202,81 +203,26 @@ export default function App() {
         setPlayedMoves([]);
     };
 
-    type GameDetails = {
-        title: string;
-        description: string;
-    };
-
     const [title, setTitle] = useState<string>('');
 
     const startSelection = [
         {
-            text: 'French (European) Style (7x7)',
+            text: 'White goes First',
             textColor: 'text-white',
             color: 'bg-slate-500',
             onPress: () => {
-                reloadBoard(frenchConfig);
-                setTitle('French (European) Style (7x7)');
+                reloadBoard(stdCheckers);
+                setTitle('Checkers');
                 setGameState('playing');
             },
         },
         {
-            text: 'J.C Wiegleb Version (9x9)',
+            text: 'Red goes First',
             textColor: 'text-white',
             color: 'bg-slate-500',
             onPress: () => {
-                reloadBoard(wieglebConfig);
-                setTitle('J.C Wiegleb Version (9x9)');
-                setGameState('playing');
-            },
-        },
-        {
-            text: 'Asymmetrical 3-3-2-2 (8x8)',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                reloadBoard(assym3322Config);
-                setTitle('Asymmetrical 3-3-2-2 (8x8)');
-                setGameState('playing');
-            },
-        },
-        {
-            text: 'English Standard Style (7x7)',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                reloadBoard(englishConfig);
-                setTitle('English Standard Style (7x7)');
-                setGameState('playing');
-            },
-        },
-        {
-            text: 'Diamond Variation (9x9)',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                reloadBoard(diamondConfig);
-                setTitle('Diamond Variation (9x9)');
-                setGameState('playing');
-            },
-        },
-        {
-            text: 'Triangular Variation (9x9)',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                reloadBoard(triangularConfig);
-                setTitle('Triangular Variation (9x9)');
-                setGameState('playing');
-            },
-        },
-        {
-            text: 'Mini-Grid Test (3x3)',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                reloadBoard(miniBoardConfig);
-                setTitle('Mini-Grid Test (3x3)');
+                reloadBoard(stdCheckers);
+                setTitle('Checkers');
                 setGameState('playing');
             },
         },
@@ -325,9 +271,9 @@ export default function App() {
             <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
                 <CustomModal
                     isActive={gameState == 'start' || gameState == 'won' || gameState == 'lost'}
-                    title="Peg Solitaire"
+                    title="Checkers"
                     // message='Instructions: Each peg can jump over and "eat"  one peg in any of the four directions, given that it lands in a hole. Your goal is to remove all but one peg from the board.'
-                    message="Pick your Peg Solitaire Variation"
+                    message="Who will play first?"
                     buttons={startSelection}></CustomModal>
                 <CustomModal
                     isActive={gameState == 'lost'}
