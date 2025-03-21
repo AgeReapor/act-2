@@ -29,7 +29,6 @@ export const BoardItem = ({
     _key = '',
     type = BoardItemType.MAN,
     position = { x: 0, y: 0 },
-    canMove = false,
     moveHandler = () => {
         console.log('no move handler');
     },
@@ -44,17 +43,18 @@ export const BoardItem = ({
         selectedRed,
         defaultWhite,
         selectedWhite,
+        currentPlayer,
     } = useContext(Context);
 
     // derived attributes
     const selected = getSelected();
     const isSelected = selected.x == position.x && selected.y == position.y;
-    // const canMove = playableMoves.length > 0;
 
     const realCoords = pos2coords(position, tileSize, gap);
 
     // handlers
     const selectedHandler = () => {
+        if (currentPlayer != owner) return;
         setSelected({ x: position.x, y: position.y });
     };
 
@@ -74,10 +74,11 @@ export const BoardItem = ({
     const size = tileSize * relSize;
     const pad = tileSize * relPadding;
     const offset = isSelected ? (tileSize * relPadding) / 2 : 0;
-    const tilt = '45deg';
 
     const translate = isSelected ? -tileSize * relTranslate : 0;
-    const rotate = isSelected ? '45deg' : '0deg';
+    const brightness = currentPlayer === owner ? 'brightness-150' : 'brightness-90';
+
+    let rotate = isSelected ? '45deg' : '0deg';
 
     const defaultColor = owner === 'red' ? defaultRed : defaultWhite;
     const selectedColor = owner === 'red' ? selectedRed : selectedWhite;
@@ -86,10 +87,12 @@ export const BoardItem = ({
 
     const spriteStyle = `absolute transition-all rounded-full duration-150 ease-out`;
 
-    if (type === BoardItemType.MAN)
+    const isKing = type === BoardItemType.KING;
+
+    if (type === BoardItemType.MAN || type === BoardItemType.KING)
         return (
             <Pressable
-                className={`absolute transition-all duration-100 ease-out `}
+                className={`absolute z-30 transition-all duration-100 ease-out `}
                 onPress={selectedHandler}
                 style={{
                     width: tileSize,
@@ -98,7 +101,7 @@ export const BoardItem = ({
                     top: realCoords.y,
                 }}>
                 <View
-                    className={`${spriteStyle} ${color}`}
+                    className={`${spriteStyle}  ${brightness}  ${color}`}
                     style={{
                         width: size,
                         height: size,
@@ -108,7 +111,7 @@ export const BoardItem = ({
                     }}
                 />
                 <View
-                    className={`${spriteStyle} ${color} mix-blend-hard-light `}
+                    className={`${spriteStyle} ${color} ${brightness} z-10 mix-blend-hard-light `}
                     style={{
                         width: size,
                         height: size,
@@ -117,6 +120,18 @@ export const BoardItem = ({
                         transform: [{ translateY: translate }, { rotateX: rotate }],
                     }}
                 />
+                {isKing && (
+                    <View
+                        className={`z-0 saturate-200 ${spriteStyle} ${selectedColor} ${isSelected ? 'animate-ping' : ''}  `}
+                        style={{
+                            width: size,
+                            height: size,
+                            left: pad,
+                            top: pad - 2 * offset - (tileSize * relPadding) / 2,
+                            transform: [{ translateY: translate }, { rotateX: rotate }],
+                        }}
+                    />
+                )}
             </Pressable>
         );
 

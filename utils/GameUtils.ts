@@ -114,6 +114,7 @@ const eatToDirection = (
             [
                 ...acc,
                 {
+                    type: 'move',
                     from,
                     to: current,
                     eaten: null,
@@ -133,6 +134,7 @@ const eatToDirection = (
         return [
             ...acc,
             {
+                type: 'eat',
                 from,
                 to: next,
                 eaten: current,

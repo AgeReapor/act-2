@@ -38,13 +38,16 @@ const moveTile = `bg-green-800`;
 const defaultRed = `bg-red-800`;
 const selectedRed = `bg-red-600`;
 
-const defaultWhite = `bg-gray-200`;
+const defaultWhite = `bg-gray-400`;
 const selectedWhite = `bg-white`;
 
 export const Context = createContext<{
     getSelected: () => Vector2;
     setSelected: (s: Vector2) => void;
     playMove: (move: Move) => void;
+    currentPlayer: string;
+    setCurrentPlayer: (player: 'red' | 'white') => void;
+
     readonly canvasSize: number;
     readonly tilesInASide: number;
     readonly gap: number;
@@ -69,6 +72,10 @@ export const Context = createContext<{
     getSelected: () => ({ x: -1, y: -1 }),
     setSelected: () => {},
     playMove: () => {},
+
+    // Player
+    currentPlayer: 'red',
+    setCurrentPlayer: (player: 'red' | 'white') => {},
 
     // Grid Attributes
     canvasSize: CANVAS_SIZE,
@@ -102,6 +109,8 @@ export default function App() {
 
     const [canvasSize, setCanvasSize] = useState<number>(CANVAS_SIZE);
 
+    const [currentPlayer, setCurrentPlayer] = useState<'red' | 'white'>('red');
+
     const playMove = (move: Move) => {
         const { from, to, eaten } = move;
 
@@ -120,7 +129,21 @@ export default function App() {
         toItem.position = from;
         if (eatenItem) eatenItem.type = BoardItemType.HOLE;
 
+        // check if man reaches other side of board
+        const goalY = fromItem.owner == 'red' ? 0 : TILES_IN_A_SIDE - 1;
+        if (fromItem.position.y == goalY) fromItem.type = BoardItemType.KING;
+
+        // update canMove for all items
+
+        newBoardState.forEach((item) => {
+            if (item.type == BoardItemType.HOLE) return;
+
+            const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
+            item.canMove = moves.length > 0;
+        });
+
         setBoardState(newBoardState);
+        setPlayedMoves([...playedMoves, move]);
 
         const winner = getWinner(boardState);
         if (winner) {
@@ -129,6 +152,7 @@ export default function App() {
             }, 500);
         }
         setSelected({ x: -1, y: -1 });
+        playerStep();
     };
 
     const getWinner = (newBoardState: BoardItemProps[]) => {
@@ -138,7 +162,6 @@ export default function App() {
             if (item.owner == 'red' && item.type != BoardItemType.HOLE) red++;
             if (item.owner == 'white' && item.type != BoardItemType.HOLE) white++;
         }
-        console.log(`Red: ${red}, White: ${white}`);
 
         if (red && white) return null;
         if (red) return 'red';
@@ -205,7 +228,7 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(stdCheckers);
-                setTitle('Checkers');
+                playerStep('white');
                 setGameState('playing');
             },
         },
@@ -215,7 +238,7 @@ export default function App() {
             color: 'bg-slate-500',
             onPress: () => {
                 reloadBoard(stdCheckers);
-                setTitle('Checkers');
+                playerStep('red');
                 setGameState('playing');
             },
         },
@@ -241,6 +264,13 @@ export default function App() {
         },
     };
 
+    const playerStep = (player?: 'red' | 'white') => {
+        if (!player) player = currentPlayer == 'red' ? 'white' : 'red';
+        setCurrentPlayer(player);
+        setGameState('playing');
+        setTitle(player.toUpperCase() + "'s turn");
+    };
+
     return (
         <Context.Provider
             value={{
@@ -251,7 +281,8 @@ export default function App() {
                 gap: calcGridAttrs(canvasSize, TILES_IN_A_SIDE).gap,
                 tileSize: calcGridAttrs(canvasSize, TILES_IN_A_SIDE).tileSize,
                 playMove: playMove,
-
+                currentPlayer: currentPlayer,
+                setCurrentPlayer,
                 canvasColor,
                 defaultDarkTile,
                 defaultLightTile,
@@ -264,7 +295,6 @@ export default function App() {
                 selectedWhite,
             }}>
             <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
-                {/*
                 <CustomModal
                     isActive={gameState == 'start' || gameState == 'won' || gameState == 'lost'}
                     title="Checkers"
@@ -277,10 +307,9 @@ export default function App() {
                     buttons={lostButtons}></CustomModal>
                 <CustomModal
                     isActive={gameState == 'won'}
-                    title="You Won!"
+                    title={getWinner(boardState) + ' Player Won!'}
                     message="You won! Play again?"
                     buttons={[wonButton]}></CustomModal>
-                */}
                 <View className="w-full items-center">
                     <Text className="text-center text-2xl font-bold text-white">{title}</Text>
                 </View>
@@ -289,12 +318,6 @@ export default function App() {
                     <Button
                         title="Restart"
                         onPress={() => reloadBoard(INIT_BOARD_CONFIG)}
-                        disabled={playedMoves.length == 0}></Button>
-                    <Button
-                        title="Undo Move"
-                        onPress={() => {
-                            // undoMove();
-                        }}
                         disabled={playedMoves.length == 0}></Button>
 
                     <Button

@@ -27,7 +27,7 @@ export const MoveSquare = ({
                 left: 1.5 * gap + calcGridPosition(pos, tileSize, gap).x,
                 top: 1.5 * gap + calcGridPosition(pos, tileSize, gap).y,
             }}
-            className={`absolute animate-pulse items-center justify-center rounded transition-all duration-100 ${moveTile} `}
+            className={`absolute animate-pulse items-center justify-center rounded  ${moveTile} `}
             onPress={moveCallback}></Pressable>
     );
 };

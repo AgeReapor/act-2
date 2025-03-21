@@ -27,24 +27,6 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
 
     const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
 
-    // const currentMoves: Move[] = [
-    //     {
-    //         from: { x: 0, y: 0 },
-    //         to: { x: 2, y: 3 },
-    //         eaten: { x: 0, y: 0 },
-    //     },
-    //     {
-    //         from: { x: 0, y: 0 },
-    //         to: { x: 3, y: 4 },
-    //         eaten: { x: 0, y: 0 },
-    //     },
-    //     {
-    //         from: { x: 0, y: 0 },
-    //         to: { x: 0, y: 3 },
-    //         eaten: { x: 0, y: 0 },
-    //     },
-    // ];
-
     return (
         <View
             className={`relative rounded-md ${canvasColor}`}
@@ -67,7 +49,11 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
                 />
             ))}
             {currentMoves.map((move, index) => (
-                <MoveSquare key={'ms_' + index} pos={move.to} moveCallback={() => playMove(move)} />
+                <MoveSquare
+                    key={'ms_' + +index}
+                    pos={move.to}
+                    moveCallback={() => playMove(move)}
+                />
             ))}
         </View>
     );
