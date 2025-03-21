@@ -15,7 +15,7 @@ import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
 import { Move } from 'types/Move';
 import { BoardConfig, constructInitBoard, stdCheckers } from 'utils/BoardConfig';
-import { getPossibleMoves } from 'utils/GameUtils';
+import { getItem, getPossibleMoves } from 'utils/GameUtils';
 
 // Constant Declarations
 const CANVAS_SIZE = 360;
@@ -106,48 +106,43 @@ export default function App() {
         const { from, to, eaten } = move;
 
         const newBoardState = [...boardState];
-        newBoardState.forEach((item) => {
-            // set from type to hole
-            if (item.position.x == from.x && item.position.y == from.y)
-                item.type = BoardItemType.HOLE;
+        const fromItem = newBoardState.find(
+            (item) => item.position.x == from.x && item.position.y == from.y
+        )!;
+        const toItem = newBoardState.find(
+            (item) => item.position.x == to.x && item.position.y == to.y
+        )!;
+        const eatenItem = eaten
+            ? newBoardState.find((item) => item.position.x == eaten.x && item.position.y == eaten.y)
+            : null;
 
-            // set to type to peg
-            if (item.position.x == to.x && item.position.y == to.y) item.type = BoardItemType.MAN;
-
-            // set eaten type to hole
-            if (item.position.x == eaten.x && item.position.y == eaten.y)
-                item.type = BoardItemType.HOLE;
-        });
-
-        let pegsLeft = 0;
-        let playablePegs = 0;
-        newBoardState.forEach((item) => {
-            if (item.type == BoardItemType.HOLE) return;
-
-            pegsLeft++;
-
-            const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
-            if (moves.length <= 0) item.canMove = false;
-            else {
-                item.canMove = true;
-                playablePegs++;
-            }
-        });
+        fromItem.position = to;
+        toItem.position = from;
+        if (eatenItem) eatenItem.type = BoardItemType.HOLE;
 
         setBoardState(newBoardState);
-        setSelected({ x: -1, y: -1 });
 
-        if (pegsLeft == 1) {
+        const winner = getWinner(boardState);
+        if (winner) {
             setTimeout(() => {
                 setGameState('won');
             }, 500);
-        } else if (playablePegs == 0) {
-            setTimeout(() => {
-                setGameState('lost');
-            }, 500);
         }
+        setSelected({ x: -1, y: -1 });
+    };
 
-        setPlayedMoves([...playedMoves, move]);
+    const getWinner = (newBoardState: BoardItemProps[]) => {
+        let red = 0;
+        let white = 0;
+        for (const item of newBoardState) {
+            if (item.owner == 'red' && item.type != BoardItemType.HOLE) red++;
+            if (item.owner == 'white' && item.type != BoardItemType.HOLE) white++;
+        }
+        console.log(`Red: ${red}, White: ${white}`);
+
+        if (red && white) return null;
+        if (red) return 'red';
+        if (white) return 'white';
     };
 
     // Dynamically Resize Canvas

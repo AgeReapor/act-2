@@ -16,34 +16,11 @@ export const getItem = (
     position: Vector2,
     tilesInASide: number
 ): BoardItemProps | null => {
-    // if (!isInBoard(position, tilesInASide)) return null;
+    if (!isInBoard(position, tilesInASide)) return null;
     for (const item of boardState) {
         if (item.position.x == position.x && item.position.y == position.y) return item;
     }
     return null;
-};
-
-// checks if a move is valid given from, eaten, and to positions
-export const canEat = (
-    boardState: BoardItemProps[],
-    from: Vector2,
-    eaten: Vector2,
-    to: Vector2,
-    tilesInASide: number
-): boolean => {
-    const fromItem = getItem(boardState, from, tilesInASide);
-    const eatenItem = getItem(boardState, eaten, tilesInASide);
-    const toItem = getItem(boardState, to, tilesInASide);
-
-    // if any of the items are null, return false
-    if (!fromItem || !eatenItem || !toItem) return false;
-
-    // if from and eaten are peg and to is hole, return true
-    return (
-        fromItem.type == BoardItemType.MAN ||
-        (fromItem.type == BoardItemType.KING && eatenItem.type == BoardItemType.MAN) ||
-        (eatenItem.type == BoardItemType.KING && toItem.type == BoardItemType.HOLE)
-    );
 };
 
 export const getPossibleMoves = (
@@ -53,33 +30,114 @@ export const getPossibleMoves = (
 ): Move[] => {
     // if position is not in board, return empty
     if (!isInBoard(position, tilesInASide)) return [];
+
     let eaten, to: Vector2;
 
     const possibleMoves: Move[] = [];
 
-    // // check up
-    // eaten = { x: position.x, y: position.y - 1 };
-    // to = { x: position.x, y: position.y - 2 };
-    // if (canEat(boardState, position, eaten, to, tilesInASide))
-    //     possibleMoves.push({ dir: Direction.UP, from: position, eaten, to });
+    const fromItem = getItem(boardState, position, tilesInASide);
+    if (!fromItem) return [];
+    if (fromItem.type != BoardItemType.MAN && fromItem.type != BoardItemType.KING) return [];
 
-    // // check down
-    // eaten = { x: position.x, y: position.y + 1 };
-    // to = { x: position.x, y: position.y + 2 };
-    // if (canEat(boardState, position, eaten, to, tilesInASide))
-    //     possibleMoves.push({ dir: Direction.DOWN, from: position, eaten, to });
+    if (!fromItem.owner) return [];
 
-    // // check left
-    // eaten = { x: position.x - 1, y: position.y };
-    // to = { x: position.x - 2, y: position.y };
-    // if (canEat(boardState, position, eaten, to, tilesInASide))
-    //     possibleMoves.push({ dir: Direction.LEFT, from: position, eaten, to });
+    const dirs: Vector2[] = [];
 
-    // // check right
-    // eaten = { x: position.x + 1, y: position.y };
-    // to = { x: position.x + 2, y: position.y };
-    // if (canEat(boardState, position, eaten, to, tilesInASide))
-    //     possibleMoves.push({ dir: Direction.RIGHT, from: position, eaten, to });
+    if (fromItem?.owner === 'red' || fromItem.type == BoardItemType.KING) {
+        dirs.push({
+            x: 1,
+            y: -1,
+        });
+        dirs.push({
+            x: -1,
+            y: -1,
+        });
+    }
+
+    if (fromItem?.owner === 'white' || fromItem.type == BoardItemType.KING) {
+        dirs.push({
+            x: 1,
+            y: 1,
+        });
+        dirs.push({
+            x: -1,
+            y: 1,
+        });
+    }
+
+    for (const dir of dirs) {
+        const acc = eatToDirection(
+            position,
+            fromItem.owner,
+            { x: position.x + dir.x, y: position.y + dir.y },
+            dir,
+            fromItem.type == BoardItemType.MAN ? 0 : 8,
+            tilesInASide,
+            boardState,
+            []
+        );
+        if (acc.length > 0) possibleMoves.push(...acc);
+    }
 
     return possibleMoves;
+};
+
+const eatToDirection = (
+    from: Vector2,
+    eater: 'red' | 'white',
+    current: Vector2,
+    dir: Vector2,
+    range: number,
+    tilesInASide: number,
+    boardState: BoardItemProps[],
+    acc: Move[]
+): Move[] => {
+    // base cases, return accumulator as is
+    if (!isInBoard(current, tilesInASide)) return acc;
+    if (range < 0) return acc;
+
+    const currItem = getItem(boardState, current, tilesInASide);
+
+    // if currItem is null, return accumulator
+    if (!currItem) return acc;
+
+    // if currItem is hole, add current to accumulator and recurse
+    if (currItem.type == BoardItemType.HOLE)
+        return eatToDirection(
+            from,
+            eater,
+            { x: current.x + dir.x, y: current.y + dir.y },
+            dir,
+            range - 1,
+            tilesInASide,
+            boardState,
+            [
+                ...acc,
+                {
+                    from,
+                    to: current,
+                    eaten: null,
+                },
+            ]
+        );
+
+    // if currItem is not a man or king, return accumulator
+    if (currItem.type != BoardItemType.MAN && currItem.type != BoardItemType.KING) return acc;
+
+    // if currItem is owned by eater, return accumulator
+    if (currItem.owner === eater) return acc;
+
+    const next = { x: current.x + dir.x, y: current.y + dir.y };
+    const nextItem = getItem(boardState, next, tilesInASide);
+    if (nextItem && nextItem.type == BoardItemType.HOLE)
+        return [
+            ...acc,
+            {
+                from,
+                to: next,
+                eaten: current,
+            },
+        ];
+
+    return acc;
 };

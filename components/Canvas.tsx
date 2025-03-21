@@ -25,25 +25,25 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
         focusLightTile,
     } = useContext(Context);
 
-    // const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
+    const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
 
-    const currentMoves: Move[] = [
-        {
-            from: { x: 0, y: 0 },
-            to: { x: 2, y: 3 },
-            eaten: { x: 0, y: 0 },
-        },
-        {
-            from: { x: 0, y: 0 },
-            to: { x: 3, y: 4 },
-            eaten: { x: 0, y: 0 },
-        },
-        {
-            from: { x: 0, y: 0 },
-            to: { x: 0, y: 3 },
-            eaten: { x: 0, y: 0 },
-        },
-    ];
+    // const currentMoves: Move[] = [
+    //     {
+    //         from: { x: 0, y: 0 },
+    //         to: { x: 2, y: 3 },
+    //         eaten: { x: 0, y: 0 },
+    //     },
+    //     {
+    //         from: { x: 0, y: 0 },
+    //         to: { x: 3, y: 4 },
+    //         eaten: { x: 0, y: 0 },
+    //     },
+    //     {
+    //         from: { x: 0, y: 0 },
+    //         to: { x: 0, y: 3 },
+    //         eaten: { x: 0, y: 0 },
+    //     },
+    // ];
 
     return (
         <View
