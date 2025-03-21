@@ -24,7 +24,7 @@ export const BoardSquare = ({
 
     const realCoords = pos2coords(position, tileSize, gap);
 
-    const tileStyles = `absolute transition-all rounded-md transition-transform duration-200 ease-out  ${isSelected ? focusColor : defaultColor}`;
+    const tileStyles = `absolute transition-all rounded-md  duration-100 ease-out  ${isSelected ? focusColor : defaultColor}`;
 
     return (
         <Pressable

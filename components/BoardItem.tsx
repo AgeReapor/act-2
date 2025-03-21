@@ -22,18 +22,30 @@ export type BoardItemProps = {
     canMove?: boolean;
     // Called when a move is selected
     moveHandler?: (move: Move) => void;
+
+    owner?: 'white' | 'red';
 };
 
 export const BoardItem = ({
     _key = '',
-    type = BoardItemType.PEG,
+    type = BoardItemType.MAN,
     position = { x: 0, y: 0 },
     canMove = false,
     moveHandler = () => {
         console.log('no move handler');
     },
+    owner = 'white',
 }: BoardItemProps) => {
-    const { getSelected, setSelected, tileSize, gap } = useContext(Context);
+    const {
+        getSelected,
+        setSelected,
+        tileSize,
+        gap,
+        defaultRed,
+        selectedRed,
+        defaultWhite,
+        selectedWhite,
+    } = useContext(Context);
 
     // derived attributes
     const selected = getSelected();
@@ -56,37 +68,58 @@ export const BoardItem = ({
     };
 
     // styles
-    const tileStyles = `absolute items-center justify-center`;
-    const [clickedDir, setClickedDir] = useState<Direction | null>(null);
+    const relSize = 0.8;
+    const relPadding = (1 - relSize) / 2;
+    const relTranslate = 0.3;
 
-    const disabledColor = 'oklch(0.437 0.078 188.216)';
-    const defaultColor = 'oklch(0.277 0.046 192.524)';
-    const selectedColor = 'oklch(0.953 0.051 180.801)';
+    const size = tileSize * relSize;
+    const pad = tileSize * relPadding;
+    const offset = isSelected ? (tileSize * relPadding) / 2 : 0;
+    const tilt = '45deg';
+
+    const translate = isSelected ? -tileSize * relTranslate : 0;
+    const rotate = isSelected ? '45deg' : '0deg';
+
+    const defaultColor = owner === 'red' ? defaultRed : defaultWhite;
+    const selectedColor = owner === 'red' ? selectedRed : selectedWhite;
+
+    const color = isSelected ? selectedColor : defaultColor;
+
+    const spriteStyle = `absolute transition-all rounded-full duration-150 ease-out ${color} `;
 
     if (type === BoardItemType.MAN)
         return (
             <Pressable
-                className={tileStyles}
-                style={{ left: realCoords.x, top: realCoords.y, width: tileSize, height: tileSize }}
-                onPress={canMove ? selectedHandler : disabledHandler}
-                onBlur={blurHandler}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Image
-                    source={pawnImage}
+                className={`absolute transition-all duration-100 ease-out `}
+                onPress={selectedHandler}
+                style={{
+                    width: tileSize,
+                    height: tileSize,
+                    left: realCoords.x,
+                    top: realCoords.y,
+                }}>
+                <View
+                    className={spriteStyle + ``}
                     style={{
-                        width: '100%',
-                        height: '100%',
-                        transform: [
-                            { translateY: isSelected ? -tileSize / 2 : 0 },
-                            { scale: isSelected ? 1.1 : 1 },
-                        ],
+                        width: size,
+                        height: size,
+                        left: pad,
+                        top: pad,
+                        transform: [{ translateY: translate }, { rotateX: rotate }],
                     }}
-                    className={`absolute transition-transform duration-200 ease-out ${isSelected ? 'drop-shadow-2xl' : ''}`}
-                    tintColor={
-                        isSelected ? selectedColor : canMove ? defaultColor : disabledColor
-                    }></Image>
+                />
+                <View
+                    className={spriteStyle + ` mix-blend-hard-light`}
+                    style={{
+                        width: size,
+                        height: size,
+                        left: pad,
+                        top: pad - offset,
+                        transform: [{ translateY: translate }, { rotateX: rotate }],
+                    }}
+                />
             </Pressable>
         );
 
-    return <View className={tileStyles}></View>;
+    return <View className={spriteStyle}></View>;
 };

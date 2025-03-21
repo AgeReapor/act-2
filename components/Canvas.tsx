@@ -14,20 +14,30 @@ type CanvasProps = {
 };
 
 export const Canvas = ({ boardState = [] }: CanvasProps) => {
-    const { getSelected, canvasSize, playMove, tilesInASide } = useContext(Context);
+    const {
+        getSelected,
+        canvasSize,
+        playMove,
+        tilesInASide,
+        canvasColor,
+        defaultDarkTile,
+        defaultLightTile,
+        focusDarkTile,
+        focusLightTile,
+    } = useContext(Context);
 
     const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
 
     return (
         <View
-            className={`relative rounded-md bg-cyan-950`}
+            className={`relative rounded-md ${canvasColor}`}
             style={{ width: canvasSize, height: canvasSize }}>
             {boardState.map((item, index) => (
                 <BoardSquare
                     key={'bg_' + item._key}
                     position={item.position}
-                    defaultColor={`${(item.position.x + item.position.y) % 2 ? 'bg-gray-300' : 'bg-teal-300'}`}
-                    focusColor={`${(item.position.x + item.position.y) % 2 ? 'bg-gray-600' : 'bg-teal-600'}`}></BoardSquare>
+                    defaultColor={`${(item.position.x + item.position.y) % 2 ? defaultDarkTile : defaultLightTile}`}
+                    focusColor={`${(item.position.x + item.position.y) % 2 ? focusDarkTile : focusLightTile}`}></BoardSquare>
             ))}
             {boardState.map((item, index) => (
                 <BoardItem
@@ -36,6 +46,7 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
                     position={item.position}
                     canMove={item.canMove}
                     moveHandler={item.moveHandler}
+                    owner={item.owner}
                 />
             ))}
             {currentMoves.map((move, index) => (

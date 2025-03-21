@@ -14,28 +14,30 @@ import { BoardItemProps } from 'components/BoardItem';
 import { calcGridAttrs } from 'utils/GridUtils';
 import { BoardItemType } from 'types/BoardItemType';
 import { Move } from 'types/Move';
-import {
-    constructInitBoard,
-    miniBoardConfig,
-    frenchConfig,
-    wieglebConfig,
-    assym3322Config,
-    englishConfig,
-    diamondConfig,
-    triangularConfig,
-    BoardConfig,
-    stdCheckers,
-} from 'utils/BoardConfig';
+import { BoardConfig, constructInitBoard, stdCheckers } from 'utils/BoardConfig';
 import { getPossibleMoves } from 'utils/GameUtils';
 
 // Constant Declarations
 const CANVAS_SIZE = 360;
 
 // const INIT_BOARD_CONFIG = triangularConfig;
-let INIT_BOARD_CONFIG = miniBoardConfig;
+let INIT_BOARD_CONFIG = stdCheckers;
 
 let { boardState: INIT_BOARD, tilesInASide: TILES_IN_A_SIDE } =
     constructInitBoard(INIT_BOARD_CONFIG);
+
+const canvasColor = `bg-orange-400`;
+
+const defaultDarkTile = `bg-gray-950`;
+const focusDarkTile = `bg-gray-800`;
+const defaultLightTile = `bg-red-500`;
+const focusLightTile = `bg-red-400`;
+
+const defaultRed = `bg-red-800`;
+const selectedRed = `bg-red-600`;
+
+const defaultWhite = `bg-gray-200`;
+const selectedWhite = `bg-white`;
 
 export const Context = createContext<{
     getSelected: () => Vector2;
@@ -45,6 +47,20 @@ export const Context = createContext<{
     readonly tilesInASide: number;
     readonly gap: number;
     readonly tileSize: number;
+
+    readonly canvasColor?: string;
+
+    readonly defaultDarkTile?: string;
+    readonly focusDarkTile?: string;
+    readonly defaultLightTile?: string;
+    readonly focusLightTile?: string;
+
+    readonly defaultRed?: string;
+    readonly selectedRed?: string;
+    readonly disabledRed?: string;
+    readonly defaultWhite?: string;
+    readonly selectedWhite?: string;
+    readonly disabledWhite?: string;
 }>({
     // Selected Board Item Variable
     getSelected: () => ({ x: -1, y: -1 }),
@@ -56,6 +72,17 @@ export const Context = createContext<{
     tilesInASide: TILES_IN_A_SIDE,
     gap: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).gap,
     tileSize: calcGridAttrs(CANVAS_SIZE, TILES_IN_A_SIDE).tileSize,
+
+    // Styles
+    canvasColor,
+    defaultDarkTile,
+    focusDarkTile,
+    defaultLightTile,
+    focusLightTile,
+    defaultRed,
+    selectedRed,
+    defaultWhite,
+    selectedWhite,
 });
 
 export default function App() {
@@ -81,7 +108,7 @@ export default function App() {
                 item.type = BoardItemType.HOLE;
 
             // set to type to peg
-            if (item.position.x == to.x && item.position.y == to.y) item.type = BoardItemType.PEG;
+            if (item.position.x == to.x && item.position.y == to.y) item.type = BoardItemType.MAN;
 
             // set eaten type to hole
             if (item.position.x == eaten.x && item.position.y == eaten.y)
@@ -117,39 +144,6 @@ export default function App() {
         }
 
         setPlayedMoves([...playedMoves, move]);
-    };
-
-    const undoMove = () => {
-        if (playedMoves.length == 0) return;
-
-        const move = playedMoves[playedMoves.length - 1];
-
-        const { from, to, eaten } = move;
-
-        const newBoardState = [...boardState];
-        boardState.forEach((item) => {
-            // set from type to peg
-            if (item.position.x == from.x && item.position.y == from.y)
-                item.type = BoardItemType.PEG;
-
-            // set to type to hole
-            if (item.position.x == to.x && item.position.y == to.y) item.type = BoardItemType.HOLE;
-
-            // set eaten type to peg
-            if (item.position.x == eaten.x && item.position.y == eaten.y)
-                item.type = BoardItemType.PEG;
-        });
-        newBoardState.forEach((item) => {
-            if (item.type == BoardItemType.HOLE) return;
-
-            const moves = getPossibleMoves(item.position, newBoardState, TILES_IN_A_SIDE);
-            item.canMove = moves.length > 0;
-        });
-
-        setBoardState(newBoardState);
-        setSelected({ x: -1, y: -1 });
-
-        setPlayedMoves(playedMoves.slice(0, playedMoves.length - 1));
     };
 
     // Dynamically Resize Canvas
@@ -237,15 +231,6 @@ export default function App() {
                 setGameState('start');
             },
         },
-        {
-            text: 'Undo your last move',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => {
-                undoMove();
-                setGameState('playing');
-            },
-        },
     ];
 
     const wonButton = {
@@ -267,12 +252,22 @@ export default function App() {
                 gap: calcGridAttrs(canvasSize, TILES_IN_A_SIDE).gap,
                 tileSize: calcGridAttrs(canvasSize, TILES_IN_A_SIDE).tileSize,
                 playMove: playMove,
+
+                canvasColor,
+                defaultDarkTile,
+                defaultLightTile,
+                focusDarkTile,
+                focusLightTile,
+                defaultRed,
+                selectedRed,
+                defaultWhite,
+                selectedWhite,
             }}>
-            <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
+            <SafeAreaView className="justify-center items-center gap-4 bg-gray-950 size-full">
+                {/*
                 <CustomModal
                     isActive={gameState == 'start' || gameState == 'won' || gameState == 'lost'}
                     title="Checkers"
-                    // message='Instructions: Each peg can jump over and "eat"  one peg in any of the four directions, given that it lands in a hole. Your goal is to remove all but one peg from the board.'
                     message="Who will play first?"
                     buttons={startSelection}></CustomModal>
                 <CustomModal
@@ -285,11 +280,12 @@ export default function App() {
                     title="You Won!"
                     message="You won! Play again?"
                     buttons={[wonButton]}></CustomModal>
-                <View className="w-full items-center">
-                    <Text className="text-center text-2xl font-bold text-white">{title}</Text>
+                */}
+                <View className="items-center w-full">
+                    <Text className="font-bold text-2xl text-center text-white">{title}</Text>
                 </View>
                 <Canvas boardState={boardState}></Canvas>
-                <View className="w-full flex-row flex-wrap justify-center gap-2">
+                <View className="flex-row flex-wrap justify-center gap-2 w-full">
                     <Button
                         title="Restart"
                         onPress={() => reloadBoard(INIT_BOARD_CONFIG)}
@@ -297,7 +293,7 @@ export default function App() {
                     <Button
                         title="Undo Move"
                         onPress={() => {
-                            undoMove();
+                            // undoMove();
                         }}
                         disabled={playedMoves.length == 0}></Button>
 
