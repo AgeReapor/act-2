@@ -26,7 +26,7 @@ export function calcGridPosition(position: Vector2, tileSize: number, gap: numbe
 
 export function pos2coords(pos: Vector2, tileSize: number, gap: number): Vector2 {
     return {
-        x: 1.5 * gap + pos.x * (tileSize + gap),
-        y: 1.5 * gap + pos.y * (tileSize + gap),
+        x: 1 * gap + pos.x * (tileSize + gap),
+        y: 1 * gap + pos.y * (tileSize + gap),
     };
 }

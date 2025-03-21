@@ -24,8 +24,8 @@ export const MoveSquare = ({
             style={{
                 width: tileSize,
                 height: tileSize,
-                left: 1.5 * gap + calcGridPosition(pos, tileSize, gap).x,
-                top: 1.5 * gap + calcGridPosition(pos, tileSize, gap).y,
+                left: gap + calcGridPosition(pos, tileSize, gap).x,
+                top: gap + calcGridPosition(pos, tileSize, gap).y,
             }}
             className={`absolute animate-pulse items-center justify-center rounded  ${moveTile} `}
             onPress={moveCallback}></Pressable>

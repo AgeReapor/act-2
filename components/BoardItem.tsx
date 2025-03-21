@@ -76,7 +76,7 @@ export const BoardItem = ({
     const offset = isSelected ? (tileSize * relPadding) / 2 : 0;
 
     const translate = isSelected ? -tileSize * relTranslate : 0;
-    const brightness = currentPlayer === owner ? 'brightness-150' : 'brightness-90';
+    const brightness = currentPlayer === owner ? 'brightness-125' : 'brightness-95';
 
     let rotate = isSelected ? '45deg' : '0deg';
 

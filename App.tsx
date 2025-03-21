@@ -1,3 +1,12 @@
+// TODO: Bugs
+// 1. No stalemate handling, gets softlocked
+// 2. Item.canMove is problematic, currently not used
+
+// TODO: Features
+// 1. Allow King to eat in successiong
+// 1. Force Eating
+// 2. Button Colors dammit
+
 import './global.css';
 
 // For web hotloading
@@ -191,17 +200,6 @@ export default function App() {
 
     const [boardState, setBoardState] = useState<BoardItemProps[]>(INIT_BOARD);
 
-    const [modalState, setModalState] = useState<boolean>(false);
-
-    const modalButtons = [
-        {
-            text: 'Reset Board',
-            textColor: 'text-white',
-            color: 'bg-slate-500',
-            onPress: () => setModalState(false),
-        },
-    ];
-
     const reloadBoard = (config: BoardConfig) => {
         let { boardState: newBoardState, tilesInASide: newTilesInASide } =
             constructInitBoard(config);
@@ -216,6 +214,7 @@ export default function App() {
         });
 
         setBoardState(newBoardState);
+        setSelected({ x: -1, y: -1 });
         setPlayedMoves([]);
     };
 
@@ -225,7 +224,7 @@ export default function App() {
         {
             text: 'White goes First',
             textColor: 'text-white',
-            color: 'bg-slate-500',
+            color: '',
             onPress: () => {
                 reloadBoard(stdCheckers);
                 playerStep('white');
@@ -294,7 +293,7 @@ export default function App() {
                 defaultWhite,
                 selectedWhite,
             }}>
-            <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
+            <SafeAreaView className="size-full items-center justify-center gap-4 bg-gradient-to-tr from-red-800 to-amber-950">
                 <CustomModal
                     isActive={gameState == 'start' || gameState == 'won' || gameState == 'lost'}
                     title="Checkers"
@@ -307,7 +306,7 @@ export default function App() {
                     buttons={lostButtons}></CustomModal>
                 <CustomModal
                     isActive={gameState == 'won'}
-                    title={getWinner(boardState) + ' Player Won!'}
+                    title={getWinner(boardState)?.toUpperCase() + ' Player Won!'}
                     message="You won! Play again?"
                     buttons={[wonButton]}></CustomModal>
                 <View className="w-full items-center">
