@@ -2,7 +2,6 @@ import { BoardItemProps } from 'components/BoardItem';
 import { BoardItemType } from 'types/BoardItemType';
 import { Move } from 'types/Move';
 import { Vector2 } from 'types/Vector2';
-import { Direction } from 'types/Direction';
 
 // checks if position is inside board boundaries
 export const isInBoard = (position: Vector2, tilesInASide: number): boolean => {
@@ -41,9 +40,9 @@ export const canEat = (
 
     // if from and eaten are peg and to is hole, return true
     return (
-        fromItem.type == BoardItemType.PEG &&
-        eatenItem.type == BoardItemType.PEG &&
-        toItem.type == BoardItemType.HOLE
+        fromItem.type == BoardItemType.MAN ||
+        (fromItem.type == BoardItemType.KING && eatenItem.type == BoardItemType.MAN) ||
+        (eatenItem.type == BoardItemType.KING && toItem.type == BoardItemType.HOLE)
     );
 };
 
@@ -58,29 +57,29 @@ export const getPossibleMoves = (
 
     const possibleMoves: Move[] = [];
 
-    // check up
-    eaten = { x: position.x, y: position.y - 1 };
-    to = { x: position.x, y: position.y - 2 };
-    if (canEat(boardState, position, eaten, to, tilesInASide))
-        possibleMoves.push({ dir: Direction.UP, from: position, eaten, to });
+    // // check up
+    // eaten = { x: position.x, y: position.y - 1 };
+    // to = { x: position.x, y: position.y - 2 };
+    // if (canEat(boardState, position, eaten, to, tilesInASide))
+    //     possibleMoves.push({ dir: Direction.UP, from: position, eaten, to });
 
-    // check down
-    eaten = { x: position.x, y: position.y + 1 };
-    to = { x: position.x, y: position.y + 2 };
-    if (canEat(boardState, position, eaten, to, tilesInASide))
-        possibleMoves.push({ dir: Direction.DOWN, from: position, eaten, to });
+    // // check down
+    // eaten = { x: position.x, y: position.y + 1 };
+    // to = { x: position.x, y: position.y + 2 };
+    // if (canEat(boardState, position, eaten, to, tilesInASide))
+    //     possibleMoves.push({ dir: Direction.DOWN, from: position, eaten, to });
 
-    // check left
-    eaten = { x: position.x - 1, y: position.y };
-    to = { x: position.x - 2, y: position.y };
-    if (canEat(boardState, position, eaten, to, tilesInASide))
-        possibleMoves.push({ dir: Direction.LEFT, from: position, eaten, to });
+    // // check left
+    // eaten = { x: position.x - 1, y: position.y };
+    // to = { x: position.x - 2, y: position.y };
+    // if (canEat(boardState, position, eaten, to, tilesInASide))
+    //     possibleMoves.push({ dir: Direction.LEFT, from: position, eaten, to });
 
-    // check right
-    eaten = { x: position.x + 1, y: position.y };
-    to = { x: position.x + 2, y: position.y };
-    if (canEat(boardState, position, eaten, to, tilesInASide))
-        possibleMoves.push({ dir: Direction.RIGHT, from: position, eaten, to });
+    // // check right
+    // eaten = { x: position.x + 1, y: position.y };
+    // to = { x: position.x + 2, y: position.y };
+    // if (canEat(boardState, position, eaten, to, tilesInASide))
+    //     possibleMoves.push({ dir: Direction.RIGHT, from: position, eaten, to });
 
     return possibleMoves;
 };

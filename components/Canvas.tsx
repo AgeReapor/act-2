@@ -4,9 +4,8 @@ import { View } from 'react-native';
 import { Move } from 'types/Move';
 import { Context } from 'App';
 import { BoardSquare } from './BoardSquare';
-import { MoveArrow } from './MoveArrow';
-import { Direction } from 'types/Direction';
 import { getPossibleMoves } from 'utils/GameUtils';
+import { MoveSquare } from './MoveSquare';
 
 type CanvasProps = {
     boardState?: BoardItemProps[];
@@ -26,7 +25,25 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
         focusLightTile,
     } = useContext(Context);
 
-    const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
+    // const currentMoves: Move[] = getPossibleMoves(getSelected(), boardState, tilesInASide);
+
+    const currentMoves: Move[] = [
+        {
+            from: { x: 0, y: 0 },
+            to: { x: 2, y: 3 },
+            eaten: { x: 0, y: 0 },
+        },
+        {
+            from: { x: 0, y: 0 },
+            to: { x: 3, y: 4 },
+            eaten: { x: 0, y: 0 },
+        },
+        {
+            from: { x: 0, y: 0 },
+            to: { x: 0, y: 3 },
+            eaten: { x: 0, y: 0 },
+        },
+    ];
 
     return (
         <View
@@ -50,12 +67,7 @@ export const Canvas = ({ boardState = [] }: CanvasProps) => {
                 />
             ))}
             {currentMoves.map((move, index) => (
-                <MoveArrow
-                    key={'ma_' + index}
-                    pos={move.from}
-                    dir={move.dir}
-                    moveCallback={() => playMove(move)}
-                />
+                <MoveSquare key={'ms_' + index} pos={move.to} moveCallback={() => playMove(move)} />
             ))}
         </View>
     );

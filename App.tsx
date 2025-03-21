@@ -33,6 +33,8 @@ const focusDarkTile = `bg-gray-800`;
 const defaultLightTile = `bg-red-500`;
 const focusLightTile = `bg-red-400`;
 
+const moveTile = `bg-green-800`;
+
 const defaultRed = `bg-red-800`;
 const selectedRed = `bg-red-600`;
 
@@ -54,6 +56,7 @@ export const Context = createContext<{
     readonly focusDarkTile?: string;
     readonly defaultLightTile?: string;
     readonly focusLightTile?: string;
+    readonly moveTile?: string;
 
     readonly defaultRed?: string;
     readonly selectedRed?: string;
@@ -79,6 +82,7 @@ export const Context = createContext<{
     focusDarkTile,
     defaultLightTile,
     focusLightTile,
+    moveTile,
     defaultRed,
     selectedRed,
     defaultWhite,
@@ -99,7 +103,7 @@ export default function App() {
     const [canvasSize, setCanvasSize] = useState<number>(CANVAS_SIZE);
 
     const playMove = (move: Move) => {
-        const { dir, from, to, eaten } = move;
+        const { from, to, eaten } = move;
 
         const newBoardState = [...boardState];
         newBoardState.forEach((item) => {
@@ -258,12 +262,13 @@ export default function App() {
                 defaultLightTile,
                 focusDarkTile,
                 focusLightTile,
+                moveTile,
                 defaultRed,
                 selectedRed,
                 defaultWhite,
                 selectedWhite,
             }}>
-            <SafeAreaView className="justify-center items-center gap-4 bg-gray-950 size-full">
+            <SafeAreaView className="size-full items-center justify-center gap-4 bg-gray-950">
                 {/*
                 <CustomModal
                     isActive={gameState == 'start' || gameState == 'won' || gameState == 'lost'}
@@ -281,11 +286,11 @@ export default function App() {
                     message="You won! Play again?"
                     buttons={[wonButton]}></CustomModal>
                 */}
-                <View className="items-center w-full">
-                    <Text className="font-bold text-2xl text-center text-white">{title}</Text>
+                <View className="w-full items-center">
+                    <Text className="text-center text-2xl font-bold text-white">{title}</Text>
                 </View>
                 <Canvas boardState={boardState}></Canvas>
-                <View className="flex-row flex-wrap justify-center gap-2 w-full">
+                <View className="w-full flex-row flex-wrap justify-center gap-2">
                     <Button
                         title="Restart"
                         onPress={() => reloadBoard(INIT_BOARD_CONFIG)}

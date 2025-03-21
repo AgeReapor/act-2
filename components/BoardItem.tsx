@@ -5,7 +5,6 @@ import { Move } from 'types/Move';
 import { Vector2 } from 'types/Vector2';
 import { Context } from 'App';
 import { pos2coords } from 'utils/GridUtils';
-import { Direction } from 'types/Direction';
 
 const pawnImage = require('../assets/pawn.png');
 
@@ -85,7 +84,7 @@ export const BoardItem = ({
 
     const color = isSelected ? selectedColor : defaultColor;
 
-    const spriteStyle = `absolute transition-all rounded-full duration-150 ease-out ${color} `;
+    const spriteStyle = `absolute transition-all rounded-full duration-150 ease-out`;
 
     if (type === BoardItemType.MAN)
         return (
@@ -99,7 +98,7 @@ export const BoardItem = ({
                     top: realCoords.y,
                 }}>
                 <View
-                    className={spriteStyle + ``}
+                    className={`${spriteStyle} ${color}`}
                     style={{
                         width: size,
                         height: size,
@@ -109,7 +108,7 @@ export const BoardItem = ({
                     }}
                 />
                 <View
-                    className={spriteStyle + ` mix-blend-hard-light`}
+                    className={`${spriteStyle} ${color} mix-blend-hard-light `}
                     style={{
                         width: size,
                         height: size,
